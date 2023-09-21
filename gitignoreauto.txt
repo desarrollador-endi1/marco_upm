@@ -3,3 +3,4 @@ insumos/01_preparacion_validacion/nogit/baseprecensal.rds
 insumos/01_preparacion_validacion/nogit/BNCPV22.gpkg
 insumos/01_preparacion_validacion/nogit/rios.gpkg
 insumos/01_preparacion_validacion/nogit/rios_a.gpkg
+productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg

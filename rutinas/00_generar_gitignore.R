@@ -1,3 +1,5 @@
+library(tidyverse)
+
 sizeReport <- function(path, patt = ".*", dironly = FALSE, level = Inf) {
   
   files <- data.frame(name = character(), size = numeric())

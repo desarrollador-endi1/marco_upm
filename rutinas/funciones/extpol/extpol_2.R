@@ -2,17 +2,17 @@ extpol <- function(poli, perfil, id = NULL, lindero = NULL, buf = 5, densidad = 
   source("rutinas/funciones/ExtPol/caja.R")
   print(paste0("La función ha iniciado ", Sys.time()))
   
-  index <- unique(poli$man)
+  poli <- poli %>% 
+    rename(id = {{ id }})
+  
+  index <- unique(poli$id)
   quntosi <- vector("list", 0)
   
   for(i in 1:length(index)){
     
     pol <- poli %>% 
-      filter(man == index[i])
-    
-    pol <- pol %>% 
-      rename(id = {{ id }})
-    
+      filter(id == index[i])
+  
     pol1 <- st_buffer(pol, -buf) %>%
       summarise()
     
@@ -109,7 +109,7 @@ extpol <- function(poli, perfil, id = NULL, lindero = NULL, buf = 5, densidad = 
       #Transformación a poligono
       st_cast("POLYGON") %>% 
       #Emparejamiento geográfico para identicar pedazos de manzanas a utilizar
-      st_join(pol) %>% 
+      st_join(poli) %>% 
       filter(id.x == id.y) %>% 
       #Disolver a nivel de manzana
       group_by(id = id.x) %>% 

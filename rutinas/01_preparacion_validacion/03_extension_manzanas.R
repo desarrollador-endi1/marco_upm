@@ -6,7 +6,8 @@ library(sf)
 library(foreach)
 library(doParallel)
 
-registerDoParallel(2)
+cl <- makeCluster(9, outfile ="")
+registerDoParallel(cl)
 
 source("rutinas/funciones/extpol/extpol_2.R") #Extiente polígonos disjuntos
 
@@ -24,24 +25,45 @@ foreach(i=1:length(index),
   
   zona <- read_sf(paste0("intermedios/01_preparacion_validacion/", 
                          substr(index[i], 1, 2), "/", index[i] ,"/zona.gpkg")) %>% 
-    filter(substr(zon, 7, 9) != "999")
+    filter(substr(zon, 7, 9) != "999") 
   
-  rios <- read_sf(paste0("intermedios/01_preparacion_validacion/", 
-                         substr(index[i], 1, 2), "/", index[i] ,"/rios.gpkg"))
-  
+
   index_zon <- unique(zona$zon)
   
   man_ext <- vector("list", 0)
   
-  for(z in index_zon){
-    perfil <- zona %>% 
-      filter(zon == z)
+  if(file.exists(paste0("intermedios/01_preparacion_validacion/", 
+                        substr(index[i], 1, 2), "/", index[i],"/manzana.gpkg"))){
+    rios <- read_sf(paste0("intermedios/01_preparacion_validacion/", 
+                           substr(index[i], 1, 2), "/", index[i] ,"/rios.gpkg")) %>% 
+      st_collection_extract(type="POLYGON") %>% 
+      summarise()
     
-    polext <- extpol(manzana %>% filter(substr(man, 1, 9) == z) , 
-                     perfil, id = "man", buf = 2, densidad = 0.5, lindero = rios) 
-    
-    man_ext[[z]] <- polext[[2]]
-    
+    for(z in index_zon){
+      perfil <- zona %>% 
+        filter(zon == z) 
+      
+      poli <- manzana %>% filter(substr(man, 1, 9) == z)
+      
+      polext <- extpol(poli , 
+                       perfil, id = "man", buf = 2, densidad = 0.5, lindero = rios) 
+      
+      man_ext[[z]] <- polext[[2]]
+      
+    }
+  }else{
+    for(z in index_zon){
+      perfil <- zona %>% 
+        filter(zon == z) 
+      
+      poli <- manzana %>% filter(substr(man, 1, 9) == z)
+      
+      polext <- extpol(poli , 
+                       perfil, id = "man", buf = 2, densidad = 0.5) 
+      
+      man_ext[[z]] <- polext[[2]]
+      
+    }
   }
   
   save(man_ext, 
@@ -58,7 +80,7 @@ foreach(i=1:length(index),
   
   write_sf(man_ext, paste0("productos/01_preparacion_validacion/", 
                            substr(index[i], 1, 2), "/", index[i] ,"/manzanas_extendidas.gpkg"))
-  
-  rm(manzana, perfil, polext, puntos_donas, man_ext, rios)
   }
+          cat(sprintf("Parroquia extendida", index[i], "\n"))
 }
+stopCluster(cl)
