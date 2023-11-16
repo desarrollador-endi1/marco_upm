@@ -7,7 +7,7 @@ library(foreach)
 library(doParallel)
 
 detectCores(all.tests = FALSE, logical = TRUE)
-cl <- makeCluster(10, outfile ="")
+cl <- makeCluster(6, outfile ="")
 registerDoParallel(cl)
 
 # parametros
@@ -17,6 +17,48 @@ b <- 1
 source("rutinas/funciones/extpol/extpol_2.R") #Extiente polígonos disjuntos
 
 load("intermedios/lista_parroquias.RData")
+
+# Excluir parroquias ya extendidas
+sizeReport <- function(path, patt = ".*", dironly = FALSE, level = Inf) {
+  
+  files <- data.frame(name = character(), size = numeric())
+  
+  
+  walkDir <- function(path, level) {
+    
+    filesInDir <- list.files(path, recursive = FALSE)
+    
+    for (file in filesInDir) {
+      
+      fullPath <- file.path(path, file)
+      
+      if (dironly && !dir.exists(fullPath)) {
+        next
+      }
+      
+      if (dir.exists(fullPath) && level > 0) {
+        walkDir(fullPath, level - 1)
+      } else {
+        
+        if (!dir.exists(fullPath) && grepl(patt, file)) {
+          files <<- rbind(files, data.frame(name = fullPath, size = file.size(fullPath)))
+        }
+      }
+    }
+  }
+  
+  
+  walkDir(path, level)
+  
+  
+  return(files)
+}
+x <- sizeReport(path = "C:/Mochrie/marco_upm") %>% 
+  filter(substr(name, 68, 94) == "manzanas_extendidas_10.gpkg") %>% 
+  mutate(parroquia = substr(name,61, 66))
+
+index <- index[!index %in% x$parroquia]
+
 
 # primer for de provincia
 foreach(i=1:length(index),
