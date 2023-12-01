@@ -183,20 +183,29 @@ conglomerar <- function(A,peso,sl,idp=NULL){
     
     print(sum(aislado$congf == 0))
   }
-  
-  control <- aislado %>% 
-    filter(congf == 0) %>% 
-    mutate(zona = substr(id, 7, 9)) %>% 
-    group_by(zona) %>% 
-    summarise() %>% 
-    ungroup() %>% 
-    mutate(cong1 = 999999 - row_number() + 1) %>% 
-    select(zona, cong1)
-  
-  cong <- aislado %>% 
-    mutate(zona = substr(id, 7, 9)) %>% 
-    left_join(control, by = "zona") %>% 
-    mutate(congf = ifelse(congf == 0 & !is.na(cong1), cong1, congf)) %>% 
-    select(id, viv, congf) %>% 
-    rename({{idp}} := id)
+  if(min(aislado$congf) > 0){
+    cong <- aislado %>% 
+      select(id, viv, congf) %>% 
+      rename({{idp}} := id)
+  }else{
+    control <- aislado %>% 
+      filter(congf == 0) %>% 
+      mutate(zona = ifelse(nchar(id) == 15, substr(id, 7, 9),
+                           substr(id, 13, 15))) %>% 
+      group_by(zona) %>% 
+      summarise() %>% 
+      ungroup() %>% 
+      mutate(cong1 = 999999 - row_number() + 1) %>% 
+      select(zona, cong1)
+    
+    cong <- aislado %>% 
+      mutate(zona = ifelse(nchar(id) == 15, substr(id, 7, 9),
+                           substr(id, 13, 15))) %>% 
+      left_join(control, by = "zona") %>% 
+      mutate(congf = ifelse(congf == 0 & !is.na(cong1), cong1, congf)) %>% 
+      select(id, viv, congf) %>% 
+      rename({{idp}} := id)
+  }
+
+  return(cong)
 }

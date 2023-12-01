@@ -3,10 +3,11 @@ rm(list = ls())
 library(tidyverse)
 library(sf)
 
-li = 80
+li = 100
 
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds") %>% 
-  select(mansec, id_edif, viv = viv_ocu)
+  select(mansec, id_edif, viv = viv_ocu) %>% 
+  filter(substr(mansec, 7, 9) != "999")
 
 pesos <- peso_edif %>% 
   group_by(mansec) %>% 
