@@ -1,6 +1,10 @@
-serpenteante <- function(voronoi){
+serpenteante <- function(voronoi, idp = NULL){
   library(surveillance)
   library(spdep)
+  
+  voronoi <- voronoi %>% 
+    rename(id = {{idp}})
+  
   conglomerados_centroides <- voronoi %>% 
     st_centroid(.)
   x <- as.numeric(st_coordinates(conglomerados_centroides)[,1])
@@ -12,7 +16,9 @@ serpenteante <- function(voronoi){
   y <- prueba$y
   n <- length(x)
   if(n>1){
-    A <- poly2adjmat(voronoi)
+    #A <- poly2adjmat(voronoi)
+    A <- matinc(voronoi, tol = 0, id = "id")
+    diag(A) <- 0
     com_x <- matrix(0,n,n)
     com_y <- matrix(0,n,n)
     dis <- matrix(0,n,n)
@@ -48,10 +54,12 @@ serpenteante <- function(voronoi){
       h[man_0]=i
       print(man_0)
     }
-    prueba_01 <- cbind(voronoi,orden=h)
+    prueba_01 <- cbind(voronoi,orden=h) %>% 
+      rename({{idp}} := id)
   }
   if(n==1){
-    prueba_01 <- cbind(voronoi,orden=1)
+    prueba_01 <- cbind(voronoi,orden=1) %>% 
+    rename({{idp}} := id)
   }
   return(prueba_01)
 }
