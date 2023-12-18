@@ -34,7 +34,7 @@ sizeReport <- function(path, patt = ".*", dironly = FALSE, level = Inf) {
   
   return(files)
 }
-x <- sizeReport(path = "D:/AG/marco_upm") %>% 
+x <- sizeReport(path = "C:/Mochrie/marco_upm") %>% 
   mutate(size1 = ceiling(size/(1024*1024))) %>% 
   filter(size1 >= 100)
 

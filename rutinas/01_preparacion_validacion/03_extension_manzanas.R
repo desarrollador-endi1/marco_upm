@@ -6,12 +6,59 @@ library(sf)
 library(foreach)
 library(doParallel)
 
-cl <- makeCluster(9, outfile ="")
+detectCores(all.tests = FALSE, logical = TRUE)
+cl <- makeCluster(6, outfile ="")
 registerDoParallel(cl)
+
+# parametros
+d <- 10
+b <- 1
 
 source("rutinas/funciones/extpol/extpol_2.R") #Extiente polígonos disjuntos
 
 load("intermedios/lista_parroquias.RData")
+
+# Excluir parroquias ya extendidas
+sizeReport <- function(path, patt = ".*", dironly = FALSE, level = Inf) {
+  
+  files <- data.frame(name = character(), size = numeric())
+  
+  
+  walkDir <- function(path, level) {
+    
+    filesInDir <- list.files(path, recursive = FALSE)
+    
+    for (file in filesInDir) {
+      
+      fullPath <- file.path(path, file)
+      
+      if (dironly && !dir.exists(fullPath)) {
+        next
+      }
+      
+      if (dir.exists(fullPath) && level > 0) {
+        walkDir(fullPath, level - 1)
+      } else {
+        
+        if (!dir.exists(fullPath) && grepl(patt, file)) {
+          files <<- rbind(files, data.frame(name = fullPath, size = file.size(fullPath)))
+        }
+      }
+    }
+  }
+  
+  
+  walkDir(path, level)
+  
+  
+  return(files)
+}
+x <- sizeReport(path = "C:/Mochrie/marco_upm") %>% 
+  filter(substr(name, 68, 94) == "manzanas_extendidas_10.gpkg") %>% 
+  mutate(parroquia = substr(name,61, 66))
+
+index <- index[!index %in% x$parroquia]
+
 
 # primer for de provincia
 foreach(i=1:length(index),
@@ -46,7 +93,7 @@ foreach(i=1:length(index),
       poli <- manzana %>% filter(substr(man, 1, 9) == z)
       
       polext <- extpol(poli , 
-                       perfil, id = "man", buf = 2, densidad = 0.5, lindero = rios) 
+                       perfil, id = "man", buf = b, densidad = d, lindero = rios) 
       
       man_ext[[z]] <- polext[[2]]
       
@@ -68,7 +115,7 @@ foreach(i=1:length(index),
   
   save(man_ext, 
        file = paste0("intermedios/01_preparacion_validacion/", 
-                     substr(index[i], 1, 2), "/", index[i] ,"/manzanas_extendidas.RData"))
+                     substr(index[i], 1, 2), "/", index[i] ,"/manzanas_extendidas_", d, ".RData"))
   
   man_ext <- do.call(rbind, man_ext)
   
@@ -79,7 +126,7 @@ foreach(i=1:length(index),
                     substr(index[i], 1, 2), "/", index[i]), showWarnings = F)
   
   write_sf(man_ext, paste0("productos/01_preparacion_validacion/", 
-                           substr(index[i], 1, 2), "/", index[i] ,"/manzanas_extendidas.gpkg"))
+                           substr(index[i], 1, 2), "/", index[i] ,"/manzanas_extendidas_", d, ".gpkg"))
   }
           cat(sprintf("Parroquia extendida", index[i], "\n"))
 }
