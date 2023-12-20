@@ -10,7 +10,7 @@ source("rutinas/funciones/conglomerar.R")
 source("Rutinas/Funciones/serpenteante.r")
 
 # Definimos el límite inferior del tamaño de los conglomerados
-li = 100
+li = 60
 # Cargamos la base con el número de viviendas por edificio
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds")
 # Calculamos el número de viviendas por man_sec
@@ -177,6 +177,8 @@ saveRDS(final, paste0("productos/02_conglomeracion/conglomerados_", li, ".rds"))
 
 auxiliar$mansec[!auxiliar$mansec %in% final$man]
 
+final <- readRDS(paste0("productos/02_conglomeracion/conglomerados_", li, ".rds"))
+
 lol <- final %>% 
   mutate(id_zon = substr(man, 1, 9)) %>% 
   group_by(id_zon) %>% 
@@ -189,4 +191,4 @@ lol <- final %>%
   ungroup() %>% 
   mutate(control = ifelse(nman == nmanzon, 1, 0)) %>% 
   filter(viv < li) %>% 
-  filter(control == 0)
+  filter(control == 1)
