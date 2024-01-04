@@ -10,7 +10,7 @@ source("rutinas/funciones/conglomerar.R")
 source("Rutinas/Funciones/serpenteante.r")
 
 # Definimos el límite inferior del tamaño de los conglomerados
-li = 60
+li = 80
 # Cargamos la base con el número de viviendas por edificio
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds")
 # Calculamos el número de viviendas por man_sec
