@@ -10,7 +10,7 @@ source("rutinas/funciones/conglomerar.R")
 source("Rutinas/Funciones/serpenteante.r")
 
 # Definimos el límite inferior del tamaño de los conglomerados
-li = 80
+li = 100
 # Cargamos la base con el número de viviendas por edificio
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds")
 # Calculamos el número de viviendas por man_sec
@@ -82,7 +82,7 @@ index <- unique(substr(manzanas_juntar$mansec, 1, 6))
 
 k <- vector("list", 0)
 
-for(i in 102:length(index)){
+for(i in 1:length(index)){
   manzanas <- read_sf(paste0("productos/01_preparacion_validacion/", 
                              substr(index[i], 1, 2), "/", index[i],
                              "/manzanas_extendidas.gpkg")) %>% 

@@ -3,9 +3,9 @@ rm(list = ls())
 library(tidyverse)
 library(sf)
 
-li <- 60
+li <- 80
 
-man_con <- readRDS(paste0("productos/02_conglomeracion/conglomerados_", li, ".rds"))
+man_con <- readRDS(paste0("intermedios/02_conglomeracion/conglomerados_preliminares_", li, ".rds"))
 
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds")
 # Calculamos el número de viviendas por man_sec
@@ -77,7 +77,6 @@ for (i in 1:length(index)){
   aux[[i]] <- lol %>% 
     cbind(distancia)
 
-
   print(index[i])
 }
 
@@ -106,5 +105,10 @@ man_con_01 <- man_con %>%
               select(id_con_end, con),
             by = "id_con_end") %>% 
   mutate(id_conglomerado = paste0(substr(man, 1, 6), str_pad(con, 4, "left", "0"))) %>% 
-  select(man, id_conglomerado)
+  select(man, id_conglomerado, viv)
+
+saveRDS(man_con_01, paste0("productos/02_conglomeracion/manzanas_conglomerados_", li, ".rds"))
+
+
+
 
