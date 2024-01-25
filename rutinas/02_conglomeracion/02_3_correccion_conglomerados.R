@@ -3,7 +3,7 @@ rm(list = ls())
 library(tidyverse)
 library(sf)
 
-li <- 80
+li <- 100
 
 man_con <- readRDS(paste0("intermedios/02_conglomeracion/conglomerados_preliminares_", li, ".rds"))
 
@@ -107,7 +107,7 @@ man_con_01 <- man_con %>%
   mutate(id_conglomerado = paste0(substr(man, 1, 6), str_pad(con, 4, "left", "0"))) %>% 
   select(man, id_conglomerado, viv)
 
-saveRDS(man_con_01, paste0("productos/02_conglomeracion/manzanas_conglomerados_", li, ".rds"))
+saveRDS(man_con_01, paste0("intermedios/02_conglomeracion/manzanas_conglomerados_", li, ".rds"))
 
 
 

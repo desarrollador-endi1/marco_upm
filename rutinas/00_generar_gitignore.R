@@ -34,12 +34,12 @@ sizeReport <- function(path, patt = ".*", dironly = FALSE, level = Inf) {
   
   return(files)
 }
-x <- sizeReport(path = "C:/Mochrie/marco_upm") %>% 
+x <- sizeReport(path = getwd()) %>% 
   mutate(size1 = ceiling(size/(1024*1024))) %>% 
   filter(size1 >= 100)
 
 y <- x %>% 
-  mutate(name = gsub("D:/AG/marco_upm/", "", name)) %>% 
+  mutate(name = gsub(getwd(), "", name)) %>% 
   select(name)
 
 write.table(y, "gitignoreauto.txt", row.names = F, col.names = F, quote = F)
