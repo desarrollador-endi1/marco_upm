@@ -60,7 +60,7 @@ Z <- do.call("rbind", zona_01) %>%
 # Calculamos el número de manzanas perdidas en la conglomeración
 sum(!pesos$mansec[substr(pesos$mansec, 7, 9) == "999"] %in% H$id_sec)
 
-sum(H$congf == "999999")
+sum(substr(H$congf, 1, 1) == "9")
 
 H1 <- H %>% 
   mutate(id_con = paste0(substr(id_sec, 1, 6), congf)) %>% 
@@ -77,3 +77,5 @@ cd <- H %>%
 #n_distinct(cd$id_con9)
 
 saveRDS(cd, "intermedios/02_conglomeracion/sectores_conglomerados_60.rds")
+
+write_sf(Z, "conglomerados_dispersos.gpkg")

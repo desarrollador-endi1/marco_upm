@@ -191,7 +191,7 @@ conglomerar <- function(A,peso,sl,idp=NULL){
     control <- aislado %>% 
       filter(congf == 0) %>% 
       mutate(zona = ifelse(nchar(id) == 15, substr(id, 7, 9),
-                           substr(id, 13, 15))) %>% 
+                           substr(id, 10, 12))) %>% 
       group_by(zona) %>% 
       summarise() %>% 
       ungroup() %>% 
@@ -200,7 +200,7 @@ conglomerar <- function(A,peso,sl,idp=NULL){
     
     cong <- aislado %>% 
       mutate(zona = ifelse(nchar(id) == 15, substr(id, 7, 9),
-                           substr(id, 13, 15))) %>% 
+                           substr(id, 10, 12))) %>% 
       left_join(control, by = "zona") %>% 
       mutate(congf = ifelse(congf == 0 & !is.na(cong1), cong1, congf)) %>% 
       select(id, viv, congf) %>% 
