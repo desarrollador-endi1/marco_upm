@@ -75,25 +75,3 @@ for (i in 1 : length(provincia)){
   
   
 }
-
-control_conglomerado <- h %>% 
-  group_by(conglomerado = congf) %>% 
-  summarise(viv = sum(viv),
-            nman = n()) %>% 
-  mutate(tipo = "muestreo")
-
-control_sector <- h %>% 
-  group_by(conglomerado = substr(id_man, 1, 12)) %>% 
-  summarise(viv = sum(viv),
-            nman = n()) %>% 
-  mutate(tipo = "censo")
-
-control <- rbind(control_conglomerado, control_sector)
-
-p<-ggplot(control, aes(x=viv, color=tipo, fill=tipo)) +
-  geom_histogram(position="identity", binwidth = 4, alpha = 0.3)+
-  # geom_vline(data=mu, aes(xintercept=grp.mean, color=sex),
-  #            linetype="dashed")+
-  theme(legend.position="top")
-
-plot(p)
