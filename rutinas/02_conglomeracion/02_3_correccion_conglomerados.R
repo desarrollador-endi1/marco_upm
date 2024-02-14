@@ -3,7 +3,7 @@ rm(list = ls())
 library(tidyverse)
 library(sf)
 
-li <- 100
+li <- 60
 
 man_con <- readRDS(paste0("intermedios/02_conglomeracion/conglomerados_preliminares_", li, ".rds"))
 
@@ -65,7 +65,7 @@ for (i in 1:length(index)){
     filter(id_con %in% man_ais$id_con)
   
   
-  
+  if(dim(aux_con)[1] > 0 ){
   lol <- st_join(aux_ais, aux_con, join = st_nearest_feature) %>% 
     as.data.frame() %>% 
     select(-geom) 
@@ -75,7 +75,7 @@ for (i in 1:length(index)){
   }
   
   aux[[i]] <- lol %>% 
-    cbind(distancia)
+    cbind(distancia)}
 
   print(index[i])
 }

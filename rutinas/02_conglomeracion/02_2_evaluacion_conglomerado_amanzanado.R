@@ -6,11 +6,11 @@ library(foreach)
 library(doParallel)
 # Cargamos las funciones a utilizar
 source("rutinas/funciones/matinc.R")
-source("rutinas/funciones/conglomerar.R")
+source("rutinas/funciones/conglomera2.R")
 source("Rutinas/Funciones/serpenteante.r")
 
 # Definimos el límite inferior del tamaño de los conglomerados
-li = 100
+li = 60
 # Cargamos la base con el número de viviendas por edificio
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds")
 # Calculamos el número de viviendas por man_sec
@@ -76,7 +76,10 @@ control <- auxiliar %>%
   mutate(nhnqh = ifelse(nman == nmanzon, 1, 0))
 
 manzanas_juntar <- pesos %>% 
-  filter(mansec %in% auxiliar$mansec[auxiliar$idcon %in% control$idcon[control$viv < li & control$nhnqh == 0]])
+  filter(mansec %in% auxiliar$mansec[auxiliar$idcon %in% control$idcon[control$viv < li & control$nhnqh == 0]]) %>% 
+  rbind(pesos %>% 
+          filter(mansec %in% H$mansec[substr(H$mansec, 7, 7) != "9" & substr(H$congf, 1, 1) == "9"])
+  )
 
 index <- unique(substr(manzanas_juntar$mansec, 1, 6))
 
@@ -102,7 +105,7 @@ for(i in 1:length(index)){
                 select(-geom), by = "idcon") %>% 
     mutate(viv = ifelse(is.na(viv), 0, viv))
   # Aplicamos el algoritmo de conglomeración
-  k1 <- conglomerar(matcon, peso = pescon, sl = li, id = "idcon") %>% 
+  k1 <- conglomera2(matcon, peso = pescon, sl = li, id = "idcon") %>% 
     mutate(congf = str_pad(congf, 6, "left", "0"))
   
   apoyo <- manzanas %>% 
@@ -173,7 +176,7 @@ Teta <- do.call("rbind", t)
 
 final <- rbind(K, Teta)
 
-saveRDS(final, paste0("productos/02_conglomeracion/conglomerados_", li, ".rds"))
+saveRDS(final, paste0("intermedios/02_conglomeracion/conglomerados_preliminares_", li, ".rds"))
 
 auxiliar$mansec[!auxiliar$mansec %in% final$man]
 
@@ -192,3 +195,4 @@ lol <- final %>%
   mutate(control = ifelse(nman == nmanzon, 1, 0)) %>% 
   filter(viv < li) %>% 
   filter(control == 1)
+
