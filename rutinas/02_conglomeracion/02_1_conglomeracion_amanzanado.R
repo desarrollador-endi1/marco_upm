@@ -22,7 +22,6 @@ manzanas_excluir <- unique(particion$mansec)
 # Definimos el largo en metros mínimo para contar con incidencia entre manzanas
 largo_man <- 10
 
-
 cl <- makeCluster(9, outfile ="")
 registerDoParallel(cl)
 
