@@ -6,9 +6,9 @@ library(foreach)
 library(doParallel)
 # Cargamos las funciones a utilizar
 source("rutinas/funciones/matinc.R")
-source("rutinas/funciones/conglomerar.R")
+source("rutinas/funciones/conglomera2.R")
 # Definimos el límite inferior del tamaño de los conglomerados
-li = 80
+li = 60
 # Cargamos la base con el número de viviendas por edificio
 peso_edif <- readRDS("intermedios/01_preparacion_validacion/precenso_edificios.rds")
 # Calculamos el número de viviendas por man_sec
@@ -27,6 +27,10 @@ cl <- makeCluster(9, outfile ="")
 registerDoParallel(cl)
 
 load("intermedios/lista_parroquias.RData")
+
+#i = c(1:1042)[index == "091054"]
+
+index <- index[!index %in% c("170150", "090150")]
 
 # primer for de provincia
 foreach(i=1:length(index),
@@ -48,7 +52,7 @@ foreach(i=1:length(index),
               left_join(pesos, by = "mansec") %>% 
               mutate(viv = ifelse(is.na(viv), 0, viv))
             # Aplicamos el algoritmo de conglomeración
-            h <- conglomerar(matman, peso = pesman, sl = li, id = "mansec") %>% 
+            h <- conglomera2(matman, peso = pesman, sl = li, id = "mansec") %>% 
               mutate(congf = str_pad(congf, 6, "left", "0"))
             # Generamos el shape de conglomerados
             apoyo <- manzanas %>% 

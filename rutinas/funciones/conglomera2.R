@@ -1,3 +1,5 @@
+#A = matman; peso = pesman;sl = li;idp = "mansec"
+
 conglomera2 <- function(A,peso,sl,idp=NULL){
   #Renombramos en peso al identificador de conglomerado
   peso <- peso %>% 
@@ -19,6 +21,7 @@ conglomera2 <- function(A,peso,sl,idp=NULL){
   B[,a] <- 0
   
   while(sum(B)>=1){
+    H1 <- H
     #Paso 2. Identificamos los nodos que tienen menor numero de incidencias
     #y no son aislados
     d <- rowSums(B)
@@ -70,10 +73,33 @@ conglomera2 <- function(A,peso,sl,idp=NULL){
       unir <- rbind(unir_02,unir_03)
     }
     
+    repetidos <- unir$nodo1[unir$nodo1 %in% unir$nodo2]
+    
+    while(length(repetidos) > 0){
+    
+    unir <- unir %>% 
+      mutate(aux1 = case_when(nodo1 %in% repetidos ~ 1,
+                              T ~ 0),
+             aux2 = case_when(nodo2 %in% repetidos ~ 1,
+                              T ~ 0),
+             repetido = case_when(aux1 == 1 ~ nodo1,
+                                  T ~ nodo2)) %>% 
+      arrange(sumninc) %>% 
+      filter(!duplicated(repetido))
+    
+    repetidos <- unir$nodo1[unir$nodo1 %in% unir$nodo2]
+    
+    }
+    
+    
+    
     unir <- unir %>% 
       mutate(nodo=ifelse(nodo1 %in% H,nodo1,nodo2),
              nodob=ifelse(nodo1==nodo,nodo2,nodo1),
              previo=ifelse(nodob %in% H,1,0)) 
+    
+    
+    
     
     H[unir$nodo]=unir$nodo
     H[unir$nodob]=unir$nodo
@@ -83,6 +109,7 @@ conglomera2 <- function(A,peso,sl,idp=NULL){
       for(i in 1:length(index1)){
         H[H==index1[i]] <- unir$nodo[unir$nodob==index1[i]]
       }
+      
     }
     
     
@@ -90,7 +117,8 @@ conglomera2 <- function(A,peso,sl,idp=NULL){
     
     
     
-    
+    B1 <- B
+    s1 <- s
     B[unir$nodo,] <- B[unir$nodo1,]+B[unir$nodo2,]
     B[,unir$nodo] <- B[,unir$nodo1]+B[,unir$nodo2]
     B[unir$nodob,] <- 0
@@ -106,6 +134,9 @@ conglomera2 <- function(A,peso,sl,idp=NULL){
     diag(B) <- 0
     print(sum(B))
     
+    if(length(repetidos) > 0 | n_distinct(unir$nodo1) != dim(unir)[1] | n_distinct(unir$nodo2) != dim(unir)[1]){
+      B <- 0
+    }
   }
   
   r1 <- peso %>% 
@@ -183,10 +214,12 @@ conglomera2 <- function(A,peso,sl,idp=NULL){
     
     print(sum(aislado$congf == 0))
   }
-    cong <- aislado %>% 
-      mutate(congf = ifelse(congf == 0, cong, congf)) %>%  
-      select(id, viv, congf) %>% 
-      rename({{idp}} := id)
+  cong <- aislado %>% 
+    mutate(congf = case_when(congf == 0 & cong == 0 ~ npol, 
+                             congf == 0 & cong != 0 ~ cong,
+                             T ~ congf)) %>%  
+    select(id, viv, congf) %>% 
+    rename({{idp}} := id)
   
   return(cong)
 }

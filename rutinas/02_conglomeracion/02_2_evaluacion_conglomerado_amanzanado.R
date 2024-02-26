@@ -79,6 +79,9 @@ manzanas_juntar <- pesos %>%
   filter(mansec %in% auxiliar$mansec[auxiliar$idcon %in% control$idcon[control$viv < li & control$nhnqh == 0]]) %>% 
   rbind(pesos %>% 
           filter(mansec %in% H$mansec[substr(H$mansec, 7, 7) != "9" & substr(H$congf, 1, 1) == "9"])
+  ) %>% 
+  rbind(pesos %>% 
+          filter(mansec %in% H$mansec[substr(H$mansec, 7, 7) == "9" & substr(H$congf, 1, 1) == "9"])
   )
 
 index <- unique(substr(manzanas_juntar$mansec, 1, 6))
@@ -105,7 +108,7 @@ for(i in 1:length(index)){
                 select(-geom), by = "idcon") %>% 
     mutate(viv = ifelse(is.na(viv), 0, viv))
   # Aplicamos el algoritmo de conglomeración
-  k1 <- conglomera2(matcon, peso = pescon, sl = li, id = "idcon") %>% 
+  k1 <- conglomera2(matcon, peso = pescon, sl = li, idp = "idcon") %>% 
     mutate(congf = str_pad(congf, 6, "left", "0"))
   
   apoyo <- manzanas %>% 
@@ -180,19 +183,19 @@ saveRDS(final, paste0("intermedios/02_conglomeracion/conglomerados_preliminares_
 
 auxiliar$mansec[!auxiliar$mansec %in% final$man]
 
-final <- readRDS(paste0("productos/02_conglomeracion/conglomerados_", li, ".rds"))
-
-lol <- final %>% 
-  mutate(id_zon = substr(man, 1, 9)) %>% 
-  group_by(id_zon) %>% 
-  mutate(nmanzon = n()) %>% 
-  ungroup() %>% 
-  group_by(id_con) %>% 
-  summarise(viv = sum(viv),
-            nman = n(),
-            nmanzon = min(nmanzon)) %>% 
-  ungroup() %>% 
-  mutate(control = ifelse(nman == nmanzon, 1, 0)) %>% 
-  filter(viv < li) %>% 
-  filter(control == 1)
-
+# final <- readRDS(paste0("productos/02_conglomeracion/conglomerados_", li, ".rds"))
+# 
+# lol <- final %>% 
+#   mutate(id_zon = substr(man, 1, 9)) %>% 
+#   group_by(id_zon) %>% 
+#   mutate(nmanzon = n()) %>% 
+#   ungroup() %>% 
+#   group_by(id_con) %>% 
+#   summarise(viv = sum(viv),
+#             nman = n(),
+#             nmanzon = min(nmanzon)) %>% 
+#   ungroup() %>% 
+#   mutate(control = ifelse(nman == nmanzon, 1, 0)) %>% 
+#   filter(viv < li) %>% 
+#   filter(control == 1)
+# 
