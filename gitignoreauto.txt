@@ -1,4 +1,6 @@
 /insumos/censo/CPV_NACIONAL_DINEM_CSV_15_01_2024.zip
+/insumos/censo/hog_2022.csv
+/insumos/censo/pob_2022.csv
 /insumos/censo/viv_2022.csv
 /insumos/nogit/rios_a.gpkg
 /insumos/nogit/rios_a.rar

@@ -3,7 +3,7 @@ rm(list = ls())
 library(tidyverse)
 library(sf)
 
-li <- 100
+li <- 60
 
 man_con <- readRDS(paste0("intermedios/02_conglomeracion/conglomerados_preliminares_", li, ".rds"))
 
@@ -50,37 +50,69 @@ for (i in 1:length(index)){
   manzanas <- read_sf(paste0("productos/01_preparacion_validacion/", 
                              substr(index[i], 1, 2), "/", index[i],
                              "/manzanas_extendidas.gpkg")) %>% 
-    left_join(man_con %>% select(man, id_con, viv), by = "man")
+    left_join(man_con %>% select(man, id_con, viv), by = "man") %>% 
+    mutate(id_zon = case_when(substr(man, 7, 7) == "9" ~ substr(man, 1, 9),
+                              T ~ paste0(substr(man, 1, 6), "000")))
   
-  auxiliar <- manzanas %>% 
+  auxiliar <- manzanas %>%
     group_by(id_con) %>% 
-    summarise(viv = sum(viv))
-  
-  aux_con <- auxiliar %>% 
-    filter(viv >= li) %>% 
-    rename(id_con_new = id_con,
-           viv_new = viv) 
-  
-  aux_ais <- auxiliar %>% 
-    filter(id_con %in% man_ais$id_con)
+    mutate(viv1 = sum(viv)) %>% 
+    group_by(id_zon, id_con) %>% 
+    summarise(viv = mean(viv1))
   
   
+  index_zon <- unique(auxiliar$id_zon)
   
-  lol <- st_join(aux_ais, aux_con, join = st_nearest_feature) %>% 
-    as.data.frame() %>% 
-    select(-geom) 
-  distancia <- vector("numeric", dim(lol)[1])
-  for (j in 1 : (dim(lol)[1])){
-    distancia[j] <- as.numeric(st_distance(aux_ais %>% filter(id_con == lol$id_con[j]), aux_con %>% filter(id_con_new %in% lol$id_con_new[j])))
+  ap <- vector("list", 0)
+  
+  for(k in 1:length(index_zon)){
+    
+    aux_ais <- auxiliar %>% 
+      filter(id_con %in% man_ais$id_con) %>% 
+      filter(id_zon == index_zon[k])
+    
+    if(dim(aux_ais)[1] > 0){
+      
+      aux_con <- auxiliar %>% 
+        filter(viv >= li) %>% 
+        rename(id_con_new = id_con,
+               viv_new = viv) %>% 
+        filter(id_zon == index_zon[k])
+      
+      if(dim(aux_con)[1] > 0 ){
+        lol <- st_join(aux_ais, aux_con, join = st_nearest_feature) %>% 
+          as.data.frame() %>% 
+          select(-geom) 
+        distancia <- vector("numeric", dim(lol)[1])
+        for (j in 1 : (dim(lol)[1])){
+          distancia[j] <- as.numeric(st_distance(aux_ais %>% filter(id_con == lol$id_con[j]), aux_con %>% filter(id_con_new %in% lol$id_con_new[j])))
+        }
+        
+        ap[[k]] <- lol %>% 
+          cbind(distancia) %>% 
+          select(-starts_with("id_zon"))
+      }else{
+        ap[[k]] <- aux_ais %>% 
+          as.data.frame() %>% 
+          select(id_con, viv) %>% 
+          mutate(id_con_new = min(id_con),
+                 viv_new = sum(viv), 
+                 distancia = 777) %>% 
+          filter(id_con != id_con_new)
+        
+      }
+      
+    }
+    
   }
   
-  aux[[i]] <- lol %>% 
-    cbind(distancia)
-
+  aux[[i]] <- do.call("rbind", ap)
   print(index[i])
 }
 
-aux1 <- do.call("rbind", aux)
+aux1 <- do.call("rbind", aux) %>% 
+  group_by(id_con) %>% 
+  mutate(n = n())
 
 con_01 <- man_con %>% 
   left_join(aux1 %>% 

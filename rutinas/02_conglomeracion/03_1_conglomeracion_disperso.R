@@ -4,7 +4,7 @@ library(tidyverse)
 library(sf)
 # Cargamos las funciones a utilizar
 source("rutinas/funciones/matinc.R")
-source("rutinas/funciones/conglomerar.R")
+source("rutinas/funciones/conglomera2.R")
 # Definimos el límite inferior del tamaño de los conglomerados
 li = 60
 # Cargamos la base con el número de viviendas por edificio
@@ -45,7 +45,7 @@ for (i in 1 : length(provincia)){
         left_join(pesos, by = c("id_sec" = "man_sec")) %>% 
         mutate(viv = ifelse(is.na(viv), 0, viv))
       # Aplicamos el algoritmo de conglomeración
-      h <- conglomerar(matsec, peso = pessec, sl = li, id = "id_sec") %>% 
+      h <- conglomera2(matsec, peso = pessec, sl = li, id = "id_sec") %>% 
         mutate(congf = str_pad(congf, 6, "left", "0"))
       # Generamos el shape de conglomerados
       apoyo <- sectores %>% 
@@ -74,4 +74,4 @@ for (i in 1 : length(provincia)){
   }
   
   
-}
+                                                                                                  }
