@@ -28,8 +28,8 @@ registerDoParallel(cl)
 load("intermedios/lista_parroquias.RData")
 
 #i = c(1:1042)[index == "091054"]
-#index <- index[!index %in% c("170150", "090150")]
-index <- c("170150", "090150")
+
+index <- index[!index %in% c("170150", "090150")]
 
 # primer for de provincia
 foreach(i=1:length(index),
