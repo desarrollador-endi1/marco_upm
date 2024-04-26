@@ -227,6 +227,8 @@ marco_01 <- marco %>%
   ungroup() %>% 
   mutate(orden_enemdu1 = orden_enemdu - max_sel,
          orden_enemdu1 = ifelse(orden_enemdu1 <= 0, Nh + orden_enemdu1, orden_enemdu1),
-         sel_enemdu = ifelse(orden_enemdu1 <= nh_enemdu, 1, 0))
+         sel_enemdu = ifelse(orden_enemdu1 <= nh_enemdu, 1, 0),
+         orden_enemdu2 = (orden_enemdu - max_sel + Nh) %% Nh,
+         orden_enemdu2 = ifelse(orden_enemdu2 == 0, Nh, orden_enemdu2))
   
   
