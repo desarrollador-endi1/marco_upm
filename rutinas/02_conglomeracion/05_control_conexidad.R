@@ -136,11 +136,52 @@ resumen_upm <- manzanas_sectores_upm %>%
   mutate(n_partes_upm = n()) %>% 
   ungroup() %>% 
   left_join(distancia, by = "id_upm") %>% 
+  ungroup() %>% 
   mutate(distancia = ifelse(is.na(distancia), 0, distancia),
          tipo = ifelse(substr(id_upm, 7, 7) == "9", "disperso", "amanzanado"),
-         control = case_when(n_partes_upm > 1 ~ "upm zonas diferentes",
+         control = case_when(distancia > 20 ~ "revisar",
+                             n_partes_upm > 1 ~ "upm zonas diferentes",
                              viv >= 60 ~ "ok",
                              viv < 60 & n_man_sec_zon == n_man_upm ~ "ya no hay más",
                              T ~ "revisar"))
 
-sum(resumen_upm$viv < 60)
+index_ynhm <- unique(resumen_upm$id_upm[resumen_upm$control %in% c("ya no hay más", "revisar") &
+                                          resumen_upm$tipo == "amanzanado"])
+
+lol <- vector("list", 0)
+
+for(i in 1:length(index_ynhm)){
+  manzanas <- read_sf(paste0("productos/01_preparacion_validacion/", 
+                             substr(index_ynhm[i], 1, 2), "/", substr(index_ynhm[i], 1, 6),
+                             "/manzanas_extendidas.gpkg")) %>% 
+    rename(man_sec = man)
+  
+  upm <- manzanas %>% 
+    left_join(manzanas_sectores_upm %>% 
+                select(man_sec, id_upm = id_upm_60), by = "man_sec") %>% 
+    group_by(id_upm) %>% 
+    summarise()
+  
+  if(dim(upm)[1] > 1){
+    lol[[i]] <- st_join(upm %>% filter(id_upm == index_ynhm[i]), 
+                        upm %>% filter(id_upm != index_ynhm[i]), 
+                        join = st_nearest_feature) %>% 
+      mutate(dis = as.numeric(st_distance(upm[upm$id_upm == .$id_upm.x,], 
+                                          upm[upm$id_upm == .$id_upm.y,]))) %>% 
+      as.data.frame() %>% 
+      select(-geom)
+  }
+  print(i)
+}
+
+lol1 <- do.call("rbind", lol)
+
+resumen_upm_01 <- resumen_upm %>% 
+  left_join(lol1 %>% select(id_upm = id_upm.x, dis), by = "id_upm") %>% 
+  mutate(dis = ifelse(is.na(dis), 0, dis)) %>% 
+  select(id_upm, viv, dis_conexidad = distancia, tipo, control, dis_upm_cercana = dis)
+
+revisar <- resumen_upm_01 %>% 
+  filter(control == "revisar" | (dis_upm_cercana < 20 & dis_upm_cercana > 0))
+
+save(resumen_upm_01, revisar, file = "intermedios/02_conglomeracion/revisar.RData")
