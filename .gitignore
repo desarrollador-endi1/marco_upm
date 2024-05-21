@@ -2,12 +2,7 @@
 .Rhistory
 .RData
 .Ruserdata
-insumos/01_preparacion_validacion/nogit/Base Precensal160323.txt_20230316_090503_0.csv
-insumos/01_preparacion_validacion/nogit/baseprecensal.rds
-insumos/01_preparacion_validacion/nogit/BNCPV22.gpkg
-insumos/01_preparacion_validacion/nogit/rios.gpkg
-insumos/01_preparacion_validacion/nogit/rios_a.gpkg
 insumos/censo/
-insumos/nogit/
+insumos/01_preparacion_validacion/nogit/
 productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg
 
