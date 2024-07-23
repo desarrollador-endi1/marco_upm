@@ -45,7 +45,9 @@ lol <- dif %>%
   mutate(nold = n()) %>% 
   ungroup() %>%
   group_by(id_upm.1) %>% 
-  mutate(nnew = n()) %>% 
+  mutate(nnew = n()) %>% saveRDS(lol, "D:/MAG/marco_administracion/insumos/01_general/viv_tot_ocu_man_sec.rds")
+saveRDS(lol, "D:/MAG/marco_administracion/insumos/01_general/viv_tot_ocu_man_sec.rds")
+
   ungroup() %>%
   filter(nold >1) %>% 
   filter(nnew >1)

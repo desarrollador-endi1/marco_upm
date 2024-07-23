@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 insumos/censo/
+/insumos/nogit/
 insumos/01_preparacion_validacion/nogit/
 productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg
-
+productos/05_lol/manzanas_consolidado.gpkg

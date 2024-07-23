@@ -1,7 +1,9 @@
 /insumos/censo/CPV_NACIONAL_DINEM_CSV_15_01_2024.zip
+/insumos/censo/DPA 2023.gpkg
 /insumos/censo/hog_2022.csv
 /insumos/censo/pob_2022.csv
 /insumos/censo/viv_2022.csv
 /insumos/nogit/rios_a.gpkg
 /insumos/nogit/rios_a.rar
 /productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg
+/productos/05_lol/manzanas_consolidado.gpkg

@@ -88,15 +88,18 @@ manzanas_sectores_upm_01 <- manzanas_sectores_upm %>%
 apoyo <- manzanas_sectores_upm_01 %>% 
   group_by(id_upm_60, cod_adz) %>% 
   summarise() %>% 
-  mutate(parroquia = substr(id_upm_60, 1, 6)) %>% 
+  mutate(parroquia = substr(id_upm_60, 1, 6),
+         amadis = ifelse(substr(id_upm_60, 7, 7) == "9",
+                         "dis", "ama")) %>% 
   arrange(parroquia, cod_adz, id_upm_60) %>% 
-  group_by(parroquia) %>% 
+  group_by(parroquia, amadis) %>% 
   mutate(cong = row_number()) %>% 
   ungroup() %>% 
   mutate(id_upm = case_when(substr(id_upm_60, 7, 7) == "9" ~  paste0(substr(id_upm_60, 1, 6), "9", str_pad(cong, 3, "left", "0")),
                             T ~ paste0(substr(id_upm_60, 1, 6), str_pad(cong, 4, "left", "0")))) %>% 
   select(id_upm_60, cod_adz, id_upm)
 
+table(nchar(apoyo$id_upm))
 
 # Renumeración final de manera general 
 manzanas_sectores_upm_02 <- manzanas_sectores_upm_01 %>% 
