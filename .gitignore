@@ -5,5 +5,9 @@
 insumos/censo/
 /insumos/nogit/
 insumos/01_preparacion_validacion/nogit/
+pedidos/10_taller_socializacion_mmm/administracion de muestras/upm_marco.gpkg
+pedidos/10_taller_socializacion_mmm/administracion de muestras/upm_sel.gpkg
+pedidos/10_taller_socializacion_mmm/informacion/parroquias.gpkg
 productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg
 productos/05_lol/manzanas_consolidado.gpkg
+productos/05_limites_upm/upm.gpkg

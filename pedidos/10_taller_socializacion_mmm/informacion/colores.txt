@@ -1,0 +1,33 @@
+DOMEST
+Rojo oscuro - urbano provincia
+359 88 84 215 25 28
+
+Rojo claro - rural provincia
+0 39 98 251 154 153
+
+Azul oscuro - urbano canton
+238 84 65 27 31 165
+
+Azul claro - rural canton (de ser el caso)
+237 44 93 133 137 238
+
+Colores análogos estratificacion (https://paletadecolores.com.mx/)
+rojo - cantón
+#ff9d81 #fd806b #fb6455 #f9473e #f72a28
+
+azul - resto provincia
+#95aeff #7a97e8 #5f81d2 #436abb #2853a4
+
+no se estratifica
+#fc913a
+
+la anterior no funciona
+
+alto - medio - bajo
+#b5ac01 #ecba09 #d41e45
+
+no se estratifica
+#e86e1c
+
+letra
+#1b1521

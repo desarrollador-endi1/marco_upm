@@ -12,8 +12,12 @@ will_area <- upm_ciu %>%
   summarise() %>% 
   ungroup()
 
-zona <- read_sf("D:/AG/Cartografía/cartografiaecuador/insumos/baseprecensal/BNCPV22.gpkg", 
+
+zona <- read_sf("D:/Disco_F/!Shapes/2022/BNCPV22.gpkg", 
                 layer = "zon_a")
+
+# zona <- read_sf("D:/AG/Cartografía/cartografiaecuador/insumos/baseprecensal/BNCPV22.gpkg", 
+#                 layer = "zon_a")
 
 shp_parroquia <- zona %>% 
   mutate(parroquia = substr(zon, 1, 6),
@@ -22,55 +26,51 @@ shp_parroquia <- zona %>%
   summarise() %>% 
   left_join(will_area, by = c("parroquia", "ama_dis"))
 
-pichincha <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "17") %>% 
-  group_by(domest) %>% 
-  summarise()
+# shape provincial
+load("D:/Disco_F/ENDI2/insumos/03_muestra_usm/dpa_2022.RData")
+rm(parroquia, canton)
 
-guayas <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "09") %>%
-  group_by(domest) %>% 
-  summarise()
-
-orellana <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "22") %>% 
-  group_by(domest) %>% 
-  summarise()
-
-galapagos <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "20") %>% 
-  group_by(domest) %>% 
-  summarise()
-
-par_pichincha_ama_dis <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "17")
-
-par_guayas_ama_dis <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "09")
-
-par_orellana_ama_dis <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "22")
-
-par_galapagos_ama_dis <- shp_parroquia %>% 
-  filter(substr(parroquia, 1, 2) == "20")
-
-write_sf(pichincha, "pedidos/10_taller_socializacion_mmm/informacion/17.gpkg")
-write_sf(par_pichincha_ama_dis, "pedidos/10_taller_socializacion_mmm/informacion/17_par_ama_dis.gpkg")
-
-write_sf(guayas, "pedidos/10_taller_socializacion_mmm/informacion/09.gpkg")
-write_sf(par_guayas_ama_dis, "pedidos/10_taller_socializacion_mmm/informacion/09_par_ama_dis.gpkg")
-
-write_sf(orellana, "pedidos/10_taller_socializacion_mmm/informacion/22.gpkg")
-write_sf(par_orellana_ama_dis, "pedidos/10_taller_socializacion_mmm/informacion/22_par_ama_dis.gpkg")
-
-write_sf(galapagos, "pedidos/10_taller_socializacion_mmm/informacion/20.gpkg")
-write_sf(par_galapagos_ama_dis, "pedidos/10_taller_socializacion_mmm/informacion/20_par_ama_dis.gpkg")
+provincia <- provincia %>% 
+  mutate(nprovin = tolower(gsub(" ", "_", nprovin)))
 
 
+for(i in 1:length(provincia$nprovin)){
+  
+  ob_prov <- shp_parroquia %>% 
+    filter(substr(parroquia, 1, 2) == provincia$provin[i]) %>% 
+    group_by(domest) %>% 
+    summarise()
+  
+  ob_par <- shp_parroquia %>% 
+    filter(substr(parroquia, 1, 2) == provincia$provin[i])
+  
+  
+  write_sf(obj = ob_prov,
+           dsn = "pedidos/10_taller_socializacion_mmm/informacion/provincias.gpkg",
+           layer = provincia$nprovin[i])
+  write_sf(obj = ob_par,
+           dsn = "pedidos/10_taller_socializacion_mmm/informacion/parroquias.gpkg",
+           layer = paste0("aman_dis_", provincia$nprovin[i]))
+  
+  print(i)
+}
 
+# para ppt marco, cantones guayaquil y riobamba
 
+shp_canton <- zona %>% 
+  mutate(canton = substr(zon, 1, 4),
+         parroquia = substr(zon, 1, 6),
+         ama_dis = ifelse(substr(zon, 7, 9) == "999", "dis", "ama")) %>% 
+  filter(canton %in% c("0901", "0601", "0701")) %>% 
+  group_by(canton, parroquia, ama_dis) %>% 
+  summarise() %>% 
+  left_join(will_area, by = c("parroquia", "ama_dis")) %>% 
+  mutate(area_dpa = ifelse(substr(parroquia, 5, 6) == "50" & ama_dis == "ama", 1, 2)) %>% 
+  ungroup()
 
-
+write_sf(obj = shp_canton,
+         dsn = "pedidos/10_taller_socializacion_mmm/administracion de muestras/cantones_0901_0701_0601.gpkg",
+         layer = "cantones_0901_0701_0601")
 
 
 
