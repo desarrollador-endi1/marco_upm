@@ -1,0 +1,5 @@
+00: resultado del ejercicio para los diferentes escenarios
+01: resultado previo sin correción geográfica
+02: versión de corrección ríos y aislados
+03: se realizó una reconglomeración en el dmq pero tiene un problema en la numeración
+04: versión actual tras la correción de la numeración en el dmq

@@ -6,4 +6,8 @@ insumos/censo/
 /insumos/nogit/
 insumos/01_preparacion_validacion/nogit/
 productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg
-productos/05_lol/manzanas_consolidado.gpkg
+intermedios/05_limites_upm/manzanas_consolidado.gpkg
+intermedios/05_limites_upm/man_sec_consolidado.gpkg
+intermedios/05_limites_upm/manzanas_consolidado.gpkg
+intermedios/05_limites_upm/sectores_consolidado.gpkg
+productos/05_limites_upm/upm.gpkg

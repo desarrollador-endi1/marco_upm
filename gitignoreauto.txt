@@ -3,7 +3,11 @@
 /insumos/censo/hog_2022.csv
 /insumos/censo/pob_2022.csv
 /insumos/censo/viv_2022.csv
+/insumos/nogit/BNCPV22.gpkg
 /insumos/nogit/rios_a.gpkg
 /insumos/nogit/rios_a.rar
+/intermedios/05_limites_upm/man_sec_consolidado.gpkg
+/intermedios/05_limites_upm/manzanas_consolidado.gpkg
+/intermedios/05_limites_upm/sectores_consolidado.gpkg
 /productos/01_preparacion_validacion/09/090150/manzanas_extendidas.gpkg
-/productos/05_lol/manzanas_consolidado.gpkg
+/productos/05_limites_upm/upm.gpkg
