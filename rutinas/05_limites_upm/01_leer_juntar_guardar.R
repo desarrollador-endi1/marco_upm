@@ -41,4 +41,9 @@ for(i in 1:length(index)){
 am <- do.call("rbind", am)
 di <- do.call("rbind", di)
 
-write_sf(am, "productos/05_lol/manzanas_consolidado.gpkg")
+am_01 <- am |> 
+  st_collection_extract("POLYGON")
+  
+
+write_sf(am_01, "intermedios/05_limites_upm/manzanas_consolidado.gpkg")
+write_sf(di, "intermedios/05_limites_upm/sectores_consolidado.gpkg")
